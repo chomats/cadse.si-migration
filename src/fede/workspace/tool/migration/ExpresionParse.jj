@@ -1,0 +1,101 @@
+/**
+ * JavaCC file
+ */
+ 
+options {
+  JDK_VERSION = "1.5";
+  STATIC= false;
+}
+PARSER_BEGIN(ExpressionParse)
+package fr.imag.adele.cadseg.exp;
+
+import java.util.ArrayList;
+
+public abstract class ExpressionParse {
+	protected ArrayList<Token> tokens = new ArrayList<Token>();
+	
+	abstract protected void parseBEGIN();
+	
+    abstract protected void parseEND();
+    
+    protected void addToken(Token t) { tokens.add(t); }
+    
+    protected String removeAntiSlash(String v) {
+    	v = v.replaceAll("\\\\(.)", "$1");
+    	return v;
+    }
+  
+}
+PARSER_END(ExpressionParse)
+
+<S2> TOKEN: {
+	< ATTR_QUALIFIED	: "ATTR_QUALIFIED">
+|	< ATTR_LINK			: "ATTR_LINK">
+}
+<DEFAULT> TOKEN : {
+	< ATTR_VAR_ITEM				: "item">
+|	< ATTR_VAR_LINK   			: "link"											  > : DEFAULT
+|	< ATTR_VAR_ATTRIBUTE		: "attribute" 										 > 
+|	< ATTR_PARENT_UNIQUE_NAME 	: "#parent-unique-name" 							 > 
+|	< ATTR_PARENT_SHORT_NAME	: "#parent-short-name" 								 > 
+|	< ATTR_PARENT_DISPLAY_NAME 	: "#parent-display-name" 							 > 
+|	< ATTR_PARENT_TYPE_NAME 	: "#parent-type-name" 								 > 
+|	< ATTR_ID 					: "#id" 											 > 
+|	< ATTR_UNIQUE_NAME 			: "#unique-name" 									 > 
+|	< ATTR_SHORT_NAME			: "#short-name" 									 > 
+|	< ATTR_DISPLAY_NAME 		: "#display-name" 									 > 
+|	< ATTR_TYPE_NAME 			: "#type-name" 										 > 
+|	< ATTR_LINK_TYPE_NAME 		: "#link-type-name" 								 > 
+|	< ATTR						: (~["}","}","$","."])+								 >
+}
+<DEFAULT> TOKEN : {
+	
+	< ATTR_BEGIN 				: "${"												 > : S1
+|	< CST						: (~["$","{", "}"] | "\\$" | "\\{" | "\\}")+ 		 >
+|	< CST_SEP					: "{" (~["$","{", "}"] | "\\$" | "\\{" | "\\}")+ "}" >
+}
+
+void main() : {
+	Token t;
+} 
+{	{ parseBEGIN(); }
+	( 
+	   t=<CST_SEP> { t.image = removeAntiSlash(t.image.substring(1,t.image.length()-1)); addToken(t); } 
+	|  t=<CST> { t.image = removeAntiSlash(t.image); addToken(t); } 
+	| attributequalified() )+
+	{ parseEND(); }
+}
+
+void attributequalified() : {
+	Token t;
+	AttributeToken ret = new AttributeToken();
+}
+{ <ATTR_BEGIN>
+	( LOOKAHEAD(2) t = <ATTR> <ATTR_POINT> { ret.addAttribute(t); })* t = attribute() { ret.addAttribute(t); } 
+  <ATTR_END>
+  { addToken(ret); }
+}
+
+Token attribute() : {
+	Token t;
+}
+{   
+	(t=<ATTR_PARENT_ID> 
+|	t=<ATTR_PARENT_UNIQUE_NAME> 
+|	t=<ATTR_PARENT_SHORT_NAME> 
+|	t=<ATTR_PARENT_DISPLAY_NAME> 
+|	t=<ATTR_PARENT_TYPE_NAME>  
+|	t=<ATTR_ID> 
+|	t=<ATTR_UNIQUE_NAME> 
+|	t=<ATTR_SHORT_NAME> 
+|	t=<ATTR_DISPLAY_NAME> 
+|	t=<ATTR_TYPE_NAME>  
+|	t=<ATTR_LINK_TYPE_NAME> 
+|	t=<ATTR>)
+	{ return(t); } 
+
+}
+
+
+
+
