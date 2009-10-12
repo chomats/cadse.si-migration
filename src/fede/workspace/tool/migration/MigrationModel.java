@@ -433,7 +433,7 @@ public class MigrationModel {
 
 	private void show(ItemType itemType) {
 		System.out.println("#ID         :" + itemType.getId());
-		for (LinkType lt : itemType.getOugoingLinkTypes()) {
+		for (LinkType lt : itemType.getOutgoingLinkTypes()) {
 			System.out.println("   - " + lt);
 		}
 	}
@@ -857,7 +857,7 @@ public class MigrationModel {
 		LinkType foundLT = null;
 		ArrayList<LinkType> ret = new ArrayList<LinkType>();
 
-		for (LinkType lt : it.getOugoingLinkTypes()) {
+		for (LinkType lt : it.getOutgoingLinkTypes()) {
 			if (lt.getDestination() == dest) {
 				ret.add(lt);
 			}

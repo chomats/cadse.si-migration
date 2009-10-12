@@ -435,7 +435,7 @@ public class MigrationMain {
 
 	private void show(ItemType itemType) {
 		System.out.println("#ID         :" + itemType.getId());
-		for (LinkType lt : itemType.getOugoingLinkTypes()) {
+		for (LinkType lt : itemType.getOutgoingLinkTypes()) {
 			System.out.println("   - " + lt);
 		}
 	}
@@ -938,7 +938,7 @@ public class MigrationMain {
 
 	private LinkType getOutgoingLinkType(ItemType it, ItemType dest) {
 		LinkType foundLT = null;
-		for (LinkType lt : it.getOugoingLinkTypes()) {
+		for (LinkType lt : it.getOutgoingLinkTypes()) {
 			if (lt.getDestination() == dest) {
 				if (foundLT == null) {
 					foundLT = lt;
