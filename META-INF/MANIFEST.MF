@@ -19,7 +19,6 @@ Import-Package: fede.workspace.tool.migration;version="1.0.0",
  fr.imag.adele.cadse.core.impl.internal;version="2.2.1",
  fr.imag.adele.cadse.core.util;version="2.2.1",
  fr.imag.adele.fede.workspace.si.migration;version="1.0.0",
- fr.imag.adele.packageinfo;version="1.0.0",
  javax.xml.bind,
  javax.xml.bind.annotation,
  org.apache.felix.ipojo;version="1.2.0",
@@ -30,15 +29,10 @@ Created-By: envsam & iPOJO
 iPOJO-Components: component { $immediate="false" $classname="fr.imag.ad
  ele.fede.workspace.si.migration.Migration" $factory="fr.imag.adele.fed
  e.workspace.si.migration.Migration" $architecture="true" manipulation 
- { field { $name="__FworkspaceCU" $type="boolean" }field { $name="works
- paceCU" $type="fr.imag.adele.cadse.core.CadseDomain" }field { $name="_
- _IM" $type="org.apache.felix.ipojo.InstanceManager" }method { $name="_
- _getworkspaceCU" $return="fr.imag.adele.cadse.core.CadseDomain" }metho
- d { $arguments="{fr.imag.adele.cadse.core.CadseDomain}" $name="__setwo
- rkspaceCU" }method { $name="$init" }method { $arguments="{org.apache.f
- elix.ipojo.InstanceManager}" $name="$init" }}requires { $field="worksp
- aceCU" $optional="true" $filter="(sam.domain.root=Workspace)" }}instan
- ce { $component="fr.imag.adele.fede.workspace.si.migration.Migration" 
- $name="fr.imag.adele.cadse.si.workspace.migration.instance" }
+ { field { $name="workspaceCU" $type="fr.imag.adele.cadse.core.CadseDom
+ ain" }method { $name="$init" }}requires { $field="workspaceCU" $option
+ al="true" $filter="(sam.domain.root=Workspace)" }}instance { $componen
+ t="fr.imag.adele.fede.workspace.si.migration.Migration" $name="fr.imag
+ .adele.cadse.si.workspace.migration.instance" }
 ipojo-auto-start: true
 
