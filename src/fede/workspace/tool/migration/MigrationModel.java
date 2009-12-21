@@ -58,7 +58,7 @@ import fede.workspace.tool.migration.var.LinkVariable;
 import fede.workspace.tool.migration.var.NoPartParent;
 import fede.workspace.tool.migration.var.Variable;
 import fr.imag.adele.cadse.core.CadseException;
-import fr.imag.adele.cadse.core.CompactUUID;
+import java.util.UUID;
 import fr.imag.adele.cadse.core.DerivedLinkDescription;
 import fr.imag.adele.cadse.core.ItemDescription;
 import fr.imag.adele.cadse.core.ItemDescriptionRef;
@@ -73,10 +73,10 @@ public class MigrationModel {
 
 	static final String								ID_FILE_NAME		= "workspace-metadata.id";
 
-	private Map<CompactUUID, ItemDescription>		items;
+	private Map<UUID, ItemDescription>		items;
 	private Map<String, ItemDescription>			itemsbyname			= new HashMap<String, ItemDescription>();
-	private HashList<CompactUUID, ItemDescription>	itemsByType			= new HashList<CompactUUID, ItemDescription>();
-	private HashList<CompactUUID, LinkDescription>	incomingLinkType	= new HashList<CompactUUID, LinkDescription>();
+	private HashList<UUID, ItemDescription>	itemsByType			= new HashList<UUID, ItemDescription>();
+	private HashList<UUID, LinkDescription>	incomingLinkType	= new HashList<UUID, LinkDescription>();
 
 	private LogicalWorkspace						cadsetype;
 
@@ -95,7 +95,7 @@ public class MigrationModel {
 	public MigrationModel() {
 	}
 
-	public int run(Logger log, LogicalWorkspace cadsetype, Map<CompactUUID, ItemDescription> items, File cadsemig_xml,
+	public int run(Logger log, LogicalWorkspace cadsetype, Map<UUID, ItemDescription> items, File cadsemig_xml,
 			String[] cadseName, int[] cadseVersion) {
 		try {
 			int count = 0;
@@ -104,8 +104,8 @@ public class MigrationModel {
 			this.cadsetype = cadsetype;
 			this.items = items;
 			itemsbyname = new HashMap<String, ItemDescription>();
-			itemsByType = new HashList<CompactUUID, ItemDescription>();
-			incomingLinkType = new HashList<CompactUUID, LinkDescription>();
+			itemsByType = new HashList<UUID, ItemDescription>();
+			incomingLinkType = new HashList<UUID, LinkDescription>();
 			resolve();
 			for (MigContext cxt : mig.getCxt()) {
 				count += run(cxt, cadseName, cadseVersion);
@@ -204,7 +204,7 @@ public class MigrationModel {
 
 	private Variable createVar(Context myCxt, boolean inst, MigVariable migVar) {
 		if (migVar instanceof MigItemType) {
-			return new ItemTypeVariable(myCxt, inst, migVar.getName(), new CompactUUID(((MigItemType) migVar)
+			return new ItemTypeVariable(myCxt, inst, migVar.getName(), new UUID(((MigItemType) migVar)
 					.getTypeUuid()));
 		}
 		if (migVar instanceof MigItem) {
@@ -269,7 +269,7 @@ public class MigrationModel {
 		return this.itemsByType.get(it.getId());
 	}
 
-	public List<ItemDescription> getItemsType(CompactUUID it) {
+	public List<ItemDescription> getItemsType(UUID it) {
 		return this.itemsByType.get(it);
 	}
 
@@ -438,14 +438,14 @@ public class MigrationModel {
 		}
 	}
 
-	public void changeType(ItemDescription source, CompactUUID type) {
-		CompactUUID oldType = source.getType();
+	public void changeType(ItemDescription source, UUID type) {
+		UUID oldType = source.getType();
 		this.itemsByType.remove(oldType, source);
 		this.itemsByType.add(type, source);
 		source.setType(type);
 	}
 
-	public void changeType(String oldtype, CompactUUID type) {
+	public void changeType(String oldtype, UUID type) {
 		for (ItemDescription itemd : items.values()) {
 			if (itemd.getType().equals(oldtype)) {
 				itemd.setType(type);
@@ -886,7 +886,7 @@ public class MigrationModel {
 	}
 
 	private ItemDescription get(ItemDescriptionRef il) {
-		CompactUUID uuid_id = il.getId();
+		UUID uuid_id = il.getId();
 		ItemDescription destdesc = items.get(uuid_id);
 		if (destdesc == null) {
 			String unique_name_id = il.getQualifiedName();
@@ -926,10 +926,10 @@ public class MigrationModel {
 
 	private LinkDescription[] getIncoming(ItemDescription destdesc) {
 		List<LinkDescription> ret = new ArrayList<LinkDescription>();
-		CompactUUID destid = destdesc.getId();
+		UUID destid = destdesc.getId();
 		for (ItemDescription desc : items.values()) {
 			for (LinkDescription ldesc : desc.getLinks()) {
-				CompactUUID ldestid = ldesc.getDestination().getId();
+				UUID ldestid = ldesc.getDestination().getId();
 				if (ldestid != null && ldestid.equals(destid)) {
 					ret.add(ldesc);
 				}
@@ -951,11 +951,11 @@ public class MigrationModel {
 	public ItemDescription getStringOrUUID(Object parentIdStr) {
 		ItemDescription ret = null;
 		try {
-			CompactUUID uuid = null;
+			UUID uuid = null;
 			if (parentIdStr instanceof String) {
-				uuid = CompactUUID.fromString((String) parentIdStr);
-			} else if (parentIdStr instanceof CompactUUID) {
-				uuid = (CompactUUID) parentIdStr;
+				uuid = UUID.fromString((String) parentIdStr);
+			} else if (parentIdStr instanceof UUID) {
+				uuid = (UUID) parentIdStr;
 			}
 			if (uuid != null) {
 				ret = items.get(uuid);
@@ -968,7 +968,7 @@ public class MigrationModel {
 		return ret;
 	}
 
-	public ItemDescription get(CompactUUID uuid) {
+	public ItemDescription get(UUID uuid) {
 		ItemDescription ret = null;
 		ret = items.get(uuid);
 		return ret;
@@ -1209,7 +1209,7 @@ public class MigrationModel {
 				if (lt2.isComposition()) {
 					continue;
 				}
-				CompactUUID uuid = ldesc_dest.getDestination().getId();
+				UUID uuid = ldesc_dest.getDestination().getId();
 				if (composentcontains(desc, uuid)) {
 					continue;
 				}
@@ -1224,7 +1224,7 @@ public class MigrationModel {
 				recomputeDerived(destdesc, consomed);
 			}
 			for (DerivedLinkDescription il : destdesc.getDerived()) {
-				CompactUUID uuid = il.getDestination().getId();
+				UUID uuid = il.getDestination().getId();
 				if (composentcontains(desc, uuid)) {
 					continue;
 				}
@@ -1237,7 +1237,7 @@ public class MigrationModel {
 		consomed.add(desc);
 	}
 
-	private boolean composentcontains(ItemDescription desc, CompactUUID uuid) {
+	private boolean composentcontains(ItemDescription desc, UUID uuid) {
 		for (ItemDescriptionRef il : desc.getComponents()) {
 			if (il.getId().equals(uuid)) {
 				return true;
@@ -1364,7 +1364,7 @@ public class MigrationModel {
 	}
 
 	public ItemDescription resolveLink(LinkDescription description) {
-		CompactUUID destid = description.getDestination().getId();
+		UUID destid = description.getDestination().getId();
 		ItemDescription dest = get(destid);
 		if (dest != null && description.getDestination() != dest) {
 			description.setDestination(dest);
@@ -1407,7 +1407,7 @@ public class MigrationModel {
 	}
 
 	private ItemDescription duplicateItem_(ItemDescription item) {
-		ItemDescription ret = new ItemDescription(CompactUUID.randomUUID(), item);
+		ItemDescription ret = new ItemDescription(UUID.randomUUID(), item);
 		items.put(ret.getId(), ret);
 		addItem(ret);
 		return ret;

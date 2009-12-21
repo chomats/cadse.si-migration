@@ -18,7 +18,7 @@
  */
 package fede.workspace.tool.migration.var;
 
-import fr.imag.adele.cadse.core.CompactUUID;
+import java.util.UUID;
 import fede.workspace.tool.migration.Context;
 
 public class ItemTypeVariable extends Variable {
@@ -28,7 +28,7 @@ public class ItemTypeVariable extends Variable {
 		super(cxt, inst, name);
 	}
 	
-	public ItemTypeVariable(Context cxt, boolean inst, String name, CompactUUID type) {
+	public ItemTypeVariable(Context cxt, boolean inst, String name, UUID type) {
 		super(cxt, inst, name,type);
 	}
 	
@@ -37,8 +37,8 @@ public class ItemTypeVariable extends Variable {
 		super(cxt, b, string);
 	}
 
-	public CompactUUID getTypeName() {
-		return (CompactUUID) getValue();
+	public UUID getTypeName() {
+		return (UUID) getValue();
 	}
 	
 	public void setTypeName(String type) {

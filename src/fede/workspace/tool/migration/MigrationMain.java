@@ -28,7 +28,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import fr.imag.adele.cadse.core.CadseException;
-import fr.imag.adele.cadse.core.CompactUUID;
+import java.util.UUID;
 import fr.imag.adele.cadse.core.DerivedLinkDescription;
 import fr.imag.adele.cadse.core.ItemDescription;
 import fr.imag.adele.cadse.core.ItemDescriptionRef;
@@ -101,7 +101,7 @@ public class MigrationMain {
 		@Override
 		public void run(String[] args) {
 			String oldtype = args[1];
-			CompactUUID type = CompactUUID.fromString(args[2]);
+			UUID type = UUID.fromString(args[2]);
 
 			changeType(oldtype, type);
 		}
@@ -440,7 +440,7 @@ public class MigrationMain {
 		}
 	}
 
-	public void changeType(String oldtype, CompactUUID type) {
+	public void changeType(String oldtype, UUID type) {
 		for (ItemDescription itemd : model.getItems()) {
 			if (itemd.getType().equals(oldtype)) {
 				itemd.setType(type);
@@ -971,7 +971,7 @@ public class MigrationMain {
 	}
 
 	private ItemDescription get(ItemDescriptionRef il) {
-		CompactUUID uuid_id = il.getId();
+		UUID uuid_id = il.getId();
 		ItemDescription destdesc = model.get(uuid_id);
 		if (destdesc == null) {
 			String unique_name_id = il.getQualifiedName();
@@ -1242,7 +1242,7 @@ public class MigrationMain {
 				if (lt2.isComposition()) {
 					continue;
 				}
-				CompactUUID uuid = ldesc_dest.getDestination().getId();
+				UUID uuid = ldesc_dest.getDestination().getId();
 				if (composentcontains(desc, uuid)) {
 					continue;
 				}
@@ -1257,7 +1257,7 @@ public class MigrationMain {
 				recomputeDerived(destdesc, consomed);
 			}
 			for (DerivedLinkDescription il : destdesc.getDerived()) {
-				CompactUUID uuid = il.getDestination().getId();
+				UUID uuid = il.getDestination().getId();
 				if (composentcontains(desc, uuid)) {
 					continue;
 				}
@@ -1270,7 +1270,7 @@ public class MigrationMain {
 		consomed.add(desc);
 	}
 
-	private boolean composentcontains(ItemDescription desc, CompactUUID uuid) {
+	private boolean composentcontains(ItemDescription desc, UUID uuid) {
 		for (ItemDescriptionRef il : desc.getComponents()) {
 			if (il.getId().equals(uuid)) {
 				return true;
