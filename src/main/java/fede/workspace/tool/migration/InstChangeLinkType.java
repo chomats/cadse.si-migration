@@ -19,19 +19,20 @@
 package fede.workspace.tool.migration;
 
 import fr.imag.adele.cadse.core.LinkDescription;
+import fr.imag.adele.cadse.core.LinkType;
 import fede.workspace.tool.migration.var.LinkTypeVariable;
 import fede.workspace.tool.migration.var.LinkVariable;
 
 public class InstChangeLinkType extends Instruction {
 	
-	static Class[] types = new Class[] {LinkDescription.class, String.class};
+	static Class[] types = new Class[] {LinkDescription.class, LinkType.class};
 	
 	
 	public InstChangeLinkType(Context cxt, LinkVariable source,  LinkTypeVariable type) throws SecurityException, NoSuchMethodException {
 		super(cxt, null, types, source, type);
 	}
 	
-	public void execute(LinkDescription source, String type) {
+	public void execute(LinkDescription source, LinkType type) {
 		source.setType(type);
 	}
 }

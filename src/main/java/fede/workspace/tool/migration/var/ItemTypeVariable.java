@@ -32,16 +32,12 @@ public class ItemTypeVariable extends Variable {
 		super(cxt, inst, name,type);
 	}
 	
-	@Deprecated
-	public ItemTypeVariable(Context cxt, boolean b, String string, String string2) {
-		super(cxt, b, string);
-	}
 
 	public UUID getTypeName() {
 		return (UUID) getValue();
 	}
 	
-	public void setTypeName(String type) {
+	public void setTypeName(UUID type) {
 		setValue(type);
 	}
 	
