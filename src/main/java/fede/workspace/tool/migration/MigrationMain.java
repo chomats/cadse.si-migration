@@ -384,7 +384,7 @@ public class MigrationMain {
 		}
 	}
 
-	public void changeLinkType(String name, String oldtype, String type) {
+	public void changeLinkType(String name, LinkType oldtype, LinkType type) {
 		ItemType it = model.getCadsetype().getItemTypeByName(name);
 		if (it != null) {
 			for (ItemDescription desc : model.getItems()) {
@@ -405,7 +405,7 @@ public class MigrationMain {
 
 	}
 
-	protected void changeLinkType(String oldtype, String type, ItemDescription desc) {
+	protected void changeLinkType(LinkType oldtype, LinkType type, ItemDescription desc) {
 		for (LinkDescription ld : desc.getLinks()) {
 			if (ld.getType().equals(oldtype)) {
 				println(" - delete ", desc, ld.getDestination(), ld.getType());
@@ -535,15 +535,7 @@ public class MigrationMain {
 			showAllHeader();
 			return false;
 		}
-
-		if (line.startsWith(RECOMPUTE_COMPONENTS)) {
-			recomputeComponents();
-			return false;
-		}
-		if (line.startsWith(RECOMPUTE_DERIVEDS)) {
-			recomputeDeriveds();
-			return false;
-		}
+		
 		if (line.startsWith(EXIT)) {
 			return true;
 		}
@@ -567,14 +559,7 @@ public class MigrationMain {
 			renameParentID(id[0], id[1]);
 			return false;
 		}
-		if (line.startsWith(SHOW_COMPONENTS)) {
-			showAllComponents();
-			return false;
-		}
-		if (line.startsWith(SHOW_DERIVEDS)) {
-			showAllDerived();
-			return false;
-		}
+		
 		String[] args = line.split(" ");
 		MigrationOperation o;
 		if (args != null && args.length != 0) {
@@ -706,34 +691,6 @@ public class MigrationMain {
 					desc.remove(l);
 				}
 			}
-
-			for (DerivedLinkDescription il : desc.getDerived()) {
-				String oldid = il.getDestination().getQualifiedName();
-				ItemDescription destdesc = model.get(oldid);
-				if (destdesc == null) {
-					removeDerived.add(il);
-					if (!showheader) {
-						showHeaderErr(desc);
-						showheader = true;
-					}
-					System.out.println("Remove derived link: " + il.getDestination().getQualifiedName());
-				}
-			}
-			if (removeDerived.size() != 0) {
-				desc.getDerived().removeAll(removeDerived);
-			}
-
-			for (ItemDescriptionRef il : desc.getComponents()) {
-				String oldid = il.getQualifiedName();
-				ItemDescription destdesc = model.get(oldid);
-				if (destdesc == null) {
-					removeComponents.add(il);
-					System.out.println("Remove component: " + il.getQualifiedName());
-				}
-			}
-			if (removeLink.size() != 0) {
-				desc.getComponents().removeAll(removeComponents);
-			}
 		}
 	}
 
@@ -778,29 +735,7 @@ public class MigrationMain {
 				System.out.println("Link destination not found: <" + ldesc.getDestination().getQualifiedName() + ">");
 			}
 		}
-
-		for (DerivedLinkDescription il : desc.getDerived()) {
-			ItemDescription destdesc = get(il.getDestination());
-
-			if (destdesc == null) {
-				if (!showheader) {
-					showHeaderErr(desc);
-					showheader = true;
-				}
-				System.out.println("Bad derived link: " + il.getDestination().getQualifiedName());
-			}
-		}
-
-		for (ItemDescriptionRef il : desc.getComponents()) {
-			ItemDescription destdesc = get(il);
-			if (destdesc == null) {
-				if (!showheader) {
-					showHeaderErr(desc);
-					showheader = true;
-				}
-				System.out.println("Bad component: " + il.getQualifiedName());
-			}
-		}
+		
 		if (model.getCadsetype() != null) {
 			ItemType it = getItemType(desc);
 			if (it == null) {
@@ -841,7 +776,7 @@ public class MigrationMain {
 							LinkType lt = findPartLinkType(parentdesc, desc);
 							if (lt != null) {
 								if (repare) {
-									new LinkDescription(parentdesc, lt.getName(), desc);
+									new LinkDescription(parentdesc, lt, desc);
 									desc.getAttributes().put(Accessor.ATTR_PARENT_ITEM_ID, parentdesc.getId());
 									System.out.flush();
 									println("Create link ", parentdesc, desc, lt.getName());
@@ -871,7 +806,7 @@ public class MigrationMain {
 							LinkType lt = findPartLinkType(parentdesc, desc);
 							if (lt != null) {
 								if (repare) {
-									new LinkDescription(parentdesc, lt.getName(), desc);
+									new LinkDescription(parentdesc, lt, desc);
 									desc.getAttributes().put(Accessor.ATTR_PARENT_ITEM_ID, parentdesc.getId());
 									System.out.println("Create link " + parentdesc.getQualifiedName() + " --("
 											+ lt.getName() + ")--> " + desc.getQualifiedName());
@@ -917,18 +852,6 @@ public class MigrationMain {
 						}
 						System.out.println("Has no part parent, parent id attribut is bad (remove)");
 						desc.getAttributes().remove(Accessor.ATTR_PARENT_ITEM_ID);
-					}
-				}
-
-				for (DerivedLinkDescription il : desc.getDerived()) {
-					ItemType derivedIt;
-					derivedIt = model.getCadsetype().getItemType(il.getDestination().getType());
-					if (derivedIt == null) {
-						if (!showheader) {
-							showHeaderErr(desc);
-							showheader = true;
-						}
-						System.out.println("Bad derived dest type: " + il.getDestination().getType());
 					}
 				}
 			}
@@ -1029,46 +952,7 @@ public class MigrationMain {
 		}
 	}
 
-	private void showAllComponents() {
-		for (ItemDescription desc : model.getItems()) {
-			ItemType it = getItemType(desc);
-			if (!it.isComposite()) {
-				continue;
-			}
-			showComponents(desc);
-			System.out.println();
-		}
-	}
 
-	private void showComponents(ItemDescription desc) {
-		System.out.println("#ID         :" + desc.getId().toString());
-		System.out.println("#Unique name:" + desc.getQualifiedName());
-		for (ItemDescriptionRef il : desc.getComponents()) {
-			System.out.println(" - " + il.getQualifiedName());
-		}
-	}
-
-	private void showAllDerived() {
-		for (ItemDescription desc : model.getItems()) {
-			ItemType it = getItemType(desc);
-			if (!it.isComposite()) {
-				continue;
-			}
-			showDeriveds(desc);
-			System.out.println();
-		}
-	}
-
-	private void showDeriveds(ItemDescription desc) {
-		System.out.println("#ID         :" + desc.getId().toString());
-		System.out.println("#Unique name:" + desc.getQualifiedName());
-		for (DerivedLinkDescription il : desc.getDerived()) {
-			System.out.println(" - [" + (il.isAggregation() ? "a" : " ") + (il.isRequire() ? "r" : " ") + "] "
-					+ il.getSource().getType() + " --(" + il.getType() + ")--> " + il.getDestination().getType());
-			System.out.println("   : " + il.getDestination().getQualifiedName() + " / "
-					+ il.getDestination().getName() + " / " + il.getDestination().getId());
-		}
-	}
 
 	private void showHeader(ItemDescription desc, String tab) {
 		System.out.println(tab + "#ID         :" + desc.getId().toString());
@@ -1123,7 +1007,7 @@ public class MigrationMain {
 				List<LinkDescription> parents = model.findparent(desc);
 				LinkType lt = findPartLinkType(parentdesc, desc);
 				if (lt != null) {
-					new LinkDescription(parentdesc, lt.getName(), desc);
+					new LinkDescription(parentdesc, lt, desc);
 					desc.getAttributes().put(Accessor.ATTR_PARENT_ITEM_ID, parentdesc.getId());
 					System.out.println("Create link " + parentdesc.getQualifiedName() + " --(" + lt.getName()
 							+ ")--> " + desc.getQualifiedName());
@@ -1139,146 +1023,7 @@ public class MigrationMain {
 			}
 		}
 	}
-
-	private void recomputeComponents() throws Throwable {
-		HashSet<ItemDescription> consomed = new HashSet<ItemDescription>();
-		if (model.getCadsetype() == null) {
-			return;
-		}
-		for (ItemDescription desc : model.getItems()) {
-			ItemType it = getItemType(desc);
-			if (it == null) {
-				continue;
-			}
-			if (!it.isComposite()) {
-				continue;
-			}
-			if (consomed.contains(desc)) {
-				continue;
-			}
-			recomputeComponent(desc, consomed);
-		}
-	}
-
-	private void recomputeComponent(ItemDescription desc, HashSet<ItemDescription> consomed) {
-		ItemType it = getItemType(desc);
-		desc.getComponents().clear();
-		for (LinkDescription ldesc : desc.getLinks()) {
-			LinkType lt = it.getOutgoingLinkType(ldesc.getType());
-			if (lt == null) {
-				continue;
-			}
-			if (!lt.isComposition()) {
-				continue;
-			}
-			ItemDescription destdesc = model.get(ldesc.getDestination().getId());
-			if (destdesc == null) {
-				throw new IllegalArgumentException(desc.getQualifiedName() + " -> "
-						+ ldesc.getDestination().getQualifiedName() + " (" + ldesc.getType() + ") is un resolved.");
-			}
-			ItemType itdest = getItemType(destdesc);
-			if (itdest == null) {
-				throw new IllegalArgumentException(destdesc.getQualifiedName() + " (" + destdesc.getType()
-						+ ") type is un resolved.");
-			}
-
-			desc.getComponents().add(destdesc);
-			if (!consomed.contains(destdesc)) {
-				recomputeComponent(destdesc, consomed);
-			}
-			desc.getComponents().addAll(destdesc.getComponents());
-		}
-		consomed.add(desc);
-	}
-
-	private void recomputeDeriveds() throws Throwable {
-		HashSet<ItemDescription> consomed = new HashSet<ItemDescription>();
-		if (model.getCadsetype() == null) {
-			return;
-		}
-		for (ItemDescription desc : model.getItems()) {
-			ItemType it = getItemType(desc);
-			if (consomed.contains(desc)) {
-				continue;
-			}
-			desc.getDerived().clear();
-			if (it == null) {
-				continue;
-			}
-			if (!it.isComposite()) {
-				continue;
-			}
-			recomputeDerived(desc, consomed);
-		}
-	}
-
-	private void recomputeDerived(ItemDescription desc, HashSet<ItemDescription> consomed) {
-		ItemType it = getItemType(desc);
-		desc.getDerived().clear();
-		for (LinkDescription ldesc : desc.getLinks()) {
-			LinkType lt = it.getOutgoingLinkType(ldesc.getType());
-			if (lt == null) {
-				continue;
-			}
-			if (!lt.isComposition()) {
-				continue;
-			}
-			ItemDescription destdesc = model.get(ldesc.getDestination().getId());
-			if (destdesc == null) {
-				throw new IllegalArgumentException(desc.getQualifiedName() + " -> "
-						+ ldesc.getDestination().getQualifiedName() + " (" + ldesc.getType() + ") is un resolved.");
-			}
-			ItemType itdest = getItemType(destdesc);
-			if (itdest == null) {
-				throw new IllegalArgumentException(destdesc.getQualifiedName() + " (" + destdesc.getType()
-						+ ") type is un resolved.");
-			}
-			for (LinkDescription ldesc_dest : destdesc.getLinks()) {
-				LinkType lt2 = itdest.getOutgoingLinkType(ldesc_dest.getType());
-				if (lt2 == null) {
-					throw new IllegalArgumentException(desc.getQualifiedName() + " -> "
-							+ ldesc.getDestination().getQualifiedName() + " (" + ldesc.getType() + ") is un resolved.");
-				}
-				if (lt2.isComposition()) {
-					continue;
-				}
-				UUID uuid = ldesc_dest.getDestination().getId();
-				if (composentcontains(desc, uuid)) {
-					continue;
-				}
-				// it's a derived link
-				DerivedLinkDescription il = new DerivedLinkDescription(desc, null, ldesc_dest.getDestination(), lt2
-						.isAggregation(), lt2.isRequire(), null, lt2.getName(), lt2.getSource().getId(), lt2
-						.getDestination().getId(), 0);
-
-				desc.getDerived().add(il);
-			}
-			if (!consomed.contains(destdesc)) {
-				recomputeDerived(destdesc, consomed);
-			}
-			for (DerivedLinkDescription il : destdesc.getDerived()) {
-				UUID uuid = il.getDestination().getId();
-				if (composentcontains(desc, uuid)) {
-					continue;
-				}
-				DerivedLinkDescription dil = new DerivedLinkDescription(desc, null, il.getDestination(), il
-						.isAggregation(), il.isRequire(), null, il.getType(), destdesc.getType(), il
-						.getOriginLinkDestinationTypeID(), 0);
-				desc.getDerived().add(dil);
-			}
-		}
-		consomed.add(desc);
-	}
-
-	private boolean composentcontains(ItemDescription desc, UUID uuid) {
-		for (ItemDescriptionRef il : desc.getComponents()) {
-			if (il.getId().equals(uuid)) {
-				return true;
-			}
-		}
-		return false;
-	}
-
+	
 	private ItemType getItemType(ItemDescriptionRef desc) {
 		ItemType it = model.getCadsetype().getItemType(desc.getType());
 		return it;

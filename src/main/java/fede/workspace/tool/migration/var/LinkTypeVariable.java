@@ -19,11 +19,12 @@
 package fede.workspace.tool.migration.var;
 
 import fede.workspace.tool.migration.Context;
+import fr.imag.adele.cadse.core.LinkType;
 
 public class LinkTypeVariable extends Variable {
 	final ItemTypeVariable source;
 	final ItemTypeVariable destination;
-	
+	LinkType _lt;
 	
 
 	public LinkTypeVariable(Context cxt, boolean inst, String name, 
@@ -40,8 +41,8 @@ public class LinkTypeVariable extends Variable {
 	}
 
 	
-	public String getLinkTypeName() {
-		return (String) getOriginalValue();
+	public LinkType getLinkTypeName() {
+		return _lt;
 	}
 
 	
@@ -76,6 +77,6 @@ public class LinkTypeVariable extends Variable {
 	
 	@Override
 	public Class getValueClass() {
-		return String.class;
+		return LinkType.class;
 	}
 }
