@@ -32,6 +32,7 @@ public class LinkTypeVariable extends Variable {
 		super(cxt, inst, name, linktypename);
 		this.source = source;
 		this.destination = destination;
+		_lt =  source.getItemType()
 	}
 
 	
