@@ -100,8 +100,8 @@ public class MigrationMain {
 
 		@Override
 		public void run(String[] args) {
-			String oldtype = args[1];
-			UUID type = UUID.fromString(args[2]);
+			ItemType oldtype = model.findItemType(args[1]);
+			ItemType type = model.findItemType(args[2]);
 
 			changeType(oldtype, type);
 		}
@@ -195,6 +195,7 @@ public class MigrationMain {
 			String oldtype = args[2];
 			String type = args[3];
 
+			
 			changeLinkType(name, oldtype, type);
 		}
 
@@ -440,7 +441,7 @@ public class MigrationMain {
 		}
 	}
 
-	public void changeType(String oldtype, UUID type) {
+	public void changeType(ItemType oldtype, ItemType type) {
 		for (ItemDescription itemd : model.getItems()) {
 			if (itemd.getType().equals(oldtype)) {
 				itemd.setType(type);
