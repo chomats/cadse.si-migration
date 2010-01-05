@@ -20,18 +20,19 @@ package fede.workspace.tool.migration;
 
 import java.util.UUID;
 import fr.imag.adele.cadse.core.ItemDescription;
+import fr.imag.adele.cadse.core.ItemType;
 import fede.workspace.tool.migration.var.ItemTypeVariable;
 import fede.workspace.tool.migration.var.ItemVarContext;
 
 public class InstChangeType extends Instruction {
-static Class[] types = new Class[] {ItemDescription.class, UUID.class};
+static Class[] types = new Class[] {ItemDescription.class, ItemType.class};
 	
 	
 	public InstChangeType(Context cxt, ItemVarContext source,  ItemTypeVariable type) throws SecurityException, NoSuchMethodException {
 		super(cxt, null, types, source, type);
 	}
 	
-	public void execute(ItemDescription source, UUID type) {
+	public void execute(ItemDescription source, ItemType type) {
 		getCxt().getModel().changeType(source, type);
 	}
 }

@@ -75,11 +75,12 @@ public class MigrationModel {
 
 	private Map<UUID, ItemDescription>		items;
 	private Map<String, ItemDescription>			itemsbyname			= new HashMap<String, ItemDescription>();
-	private HashList<UUID, ItemDescription>	itemsByType			= new HashList<UUID, ItemDescription>();
+	private HashList<ItemType, ItemDescription>	itemsByType			= new HashList<ItemType, ItemDescription>();
 	private HashList<UUID, LinkDescription>	incomingLinkType	= new HashList<UUID, LinkDescription>();
 
 	private LogicalWorkspace						cadsetype;
-
+	private Map<String, ItemType>			itemtypesbyname			= new HashMap<String, ItemType>();
+	
 	Logger											log;
 
 	private Collection<ItemDescription>				removeditems		= new ArrayList<ItemDescription>();
@@ -104,7 +105,7 @@ public class MigrationModel {
 			this.cadsetype = cadsetype;
 			this.items = items;
 			itemsbyname = new HashMap<String, ItemDescription>();
-			itemsByType = new HashList<UUID, ItemDescription>();
+			itemsByType = new HashList<ItemType, ItemDescription>();
 			incomingLinkType = new HashList<UUID, LinkDescription>();
 			resolve();
 			for (MigContext cxt : mig.getCxt()) {
@@ -204,7 +205,7 @@ public class MigrationModel {
 
 	private Variable createVar(Context myCxt, boolean inst, MigVariable migVar) {
 		if (migVar instanceof MigItemType) {
-			return new ItemTypeVariable(myCxt, inst, migVar.getName(), new UUID(((MigItemType) migVar)
+			return new ItemTypeVariable(myCxt, inst, migVar.getName(), findItemType(((MigItemType) migVar)
 					.getTypeUuid()));
 		}
 		if (migVar instanceof MigItem) {
@@ -223,6 +224,25 @@ public class MigrationModel {
 		}
 		return null;
 
+	}
+
+	public ItemType findItemType(String typeUuid) {
+		try {
+			UUID uuid = UUID.fromString(typeUuid);
+			return findItemTypeById(uuid);
+		} catch (Throwable e) {
+			return findItemTypeByName(typeUuid);
+		}
+	}
+
+	private ItemType findItemTypeByName(String typeUuid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private ItemType findItemTypeById(UUID uuid) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	private Migration read(File f) throws JAXBException, IOException {
@@ -251,7 +271,7 @@ public class MigrationModel {
 	}
 
 	private void addItem(ItemDescription desc) {
-		this.itemsByType.add(desc.getType(), desc);
+		this.itemsByType.add(desc.getTypeObject(), desc);
 		if (desc.getQualifiedName() != null) {
 			itemsbyname.put(desc.getQualifiedName(), desc);
 		}
@@ -269,7 +289,7 @@ public class MigrationModel {
 		return this.itemsByType.get(it.getId());
 	}
 
-	public List<ItemDescription> getItemsType(UUID it) {
+	public List<ItemDescription> getItemsByType(ItemType it) {
 		return this.itemsByType.get(it);
 	}
 
@@ -453,14 +473,14 @@ public class MigrationModel {
 		}
 	}
 
-	public void changeType(ItemDescription source, UUID type) {
-		UUID oldType = source.getType();
+	public void changeType(ItemDescription source, ItemType type) {
+		ItemType oldType = source.getTypeObject();
 		this.itemsByType.remove(oldType, source);
 		this.itemsByType.add(type, source);
 		source.setType(type);
 	}
 
-	public void changeType(String oldtype, UUID type) {
+	public void changeType(UUID oldtype, ItemType type) {
 		for (ItemDescription itemd : items.values()) {
 			if (itemd.getType().equals(oldtype)) {
 				itemd.setType(type);
@@ -1193,7 +1213,7 @@ public class MigrationModel {
 	}
 
 	private void deleteItem_(ItemDescription desc) {
-		this.itemsByType.remove(desc.getType(), desc);
+		this.itemsByType.remove(desc.getTypeObject(), desc);
 		if (desc.getQualifiedName() != null) {
 			itemsbyname.remove(desc.getQualifiedName());
 		}

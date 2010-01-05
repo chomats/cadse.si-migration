@@ -20,6 +20,7 @@ package fede.workspace.tool.migration.var;
 
 import java.util.UUID;
 import fede.workspace.tool.migration.Context;
+import fr.imag.adele.cadse.core.ItemType;
 
 public class ItemTypeVariable extends Variable {
 	
@@ -28,16 +29,16 @@ public class ItemTypeVariable extends Variable {
 		super(cxt, inst, name);
 	}
 	
-	public ItemTypeVariable(Context cxt, boolean inst, String name, UUID type) {
+	public ItemTypeVariable(Context cxt, boolean inst, String name, ItemType type) {
 		super(cxt, inst, name,type);
 	}
 	
 
-	public UUID getTypeName() {
-		return (UUID) getValue();
+	public ItemType getType() {
+		return (ItemType) getValue();
 	}
 	
-	public void setTypeName(UUID type) {
+	public void setType(ItemType type) {
 		setValue(type);
 	}
 	
@@ -48,13 +49,13 @@ public class ItemTypeVariable extends Variable {
 
 	@Override
 	public boolean match(Object value) {
-		return isResolved() && getTypeName().equals(value);
+		return isResolved() && getType().equals(value);
 	}
 	
 	@Override
 	public String toString() {
 		if (isResolved())
-			return getName()+": Item Type "+getTypeName();
+			return getName()+": Item Type "+getType();
 		return getName()+": Item Type = null";
 	}
 	

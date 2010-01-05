@@ -57,7 +57,7 @@ public class ItemVarContext extends Variable {
 	@Override
 	public List getPossibleValues(MigrationModel model) {
 		if (type.isResolved())
-			return model.getItemsType(type.getTypeName());
+			return model.getItemsByType(type.getType());
 		return null;
 	}
 	
