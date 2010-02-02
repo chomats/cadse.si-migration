@@ -18,28 +18,32 @@
  */
 package fede.workspace.tool.migration.var;
 
-import java.util.UUID;
 import fede.workspace.tool.migration.Context;
 import fr.imag.adele.cadse.core.ItemType;
 
 public class ItemTypeVariable extends Variable {
-	
+	ItemType _type;
 
 	public ItemTypeVariable(Context cxt, boolean inst, String name) {
 		super(cxt, inst, name);
 	}
 	
-	public ItemTypeVariable(Context cxt, boolean inst, String name, ItemType type) {
-		super(cxt, inst, name,type);
+	public ItemTypeVariable(Context cxt, boolean inst, String name, String typeName) {
+		super(cxt, inst, name, typeName);
 	}
 	
 
+	public ItemTypeVariable(Context cxt, boolean inst, String name,
+			ItemType findItemType) {
+		super(cxt, inst, name, findItemType);
+	}
+
 	public ItemType getType() {
-		return (ItemType) getValue();
+		return _type;
 	}
 	
 	public void setType(ItemType type) {
-		setValue(type);
+		_type = type;
 	}
 	
 	@Override
@@ -63,4 +67,6 @@ public class ItemTypeVariable extends Variable {
 	public Class getValueClass() {
 		return String.class;
 	}
+	
+	
 }

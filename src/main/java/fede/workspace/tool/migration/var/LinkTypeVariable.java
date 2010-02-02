@@ -32,10 +32,17 @@ public class LinkTypeVariable extends Variable {
 		super(cxt, inst, name, linktypename);
 		this.source = source;
 		this.destination = destination;
-		_lt =  source.getItemType()
+		_lt =  resolveLinkType();
 	}
 
 	
+
+	private LinkType resolveLinkType() {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Not implemented method");
+	}
+
+
 
 	public ItemTypeVariable getDestination() {
 		return destination;

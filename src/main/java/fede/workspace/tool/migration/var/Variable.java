@@ -69,10 +69,6 @@ public abstract class Variable {
 		return name;
 	}
 	
-//	public void setName(String name) {
-//		this.name = name;
-//	}
-	
 	public Variable[] getVariables() {
 		return NO_VARIABLE;
 	}

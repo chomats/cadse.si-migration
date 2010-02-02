@@ -192,8 +192,8 @@ public class MigrationMain {
 		public void run(String[] args) {
 
 			String name = args[1];
-			String oldtype = args[2];
-			String type = args[3];
+			LinkType oldtype = getLinkType(args[2]);
+			LinkType type = getLinkType(args[3]);
 
 			
 			changeLinkType(name, oldtype, type);
@@ -348,6 +348,11 @@ public class MigrationMain {
 		add(new DeleteLink());
 		add(new ChangeUniqueName());
 
+	}
+
+	public LinkType getLinkType(String string) {
+		// TODO Auto-generated method stub
+		throw new UnsupportedOperationException("Not implemented method");
 	}
 
 	public void changeUniqueName(String oldname, String newname) {
