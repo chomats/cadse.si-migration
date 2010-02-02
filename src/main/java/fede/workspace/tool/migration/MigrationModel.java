@@ -1047,7 +1047,7 @@ public class MigrationModel {
 		return ret;
 	}
 
-	public List<LinkDescription> foundOutgoingLinks(ItemDescription s, String type) {
+	public List<LinkDescription> foundOutgoingLinks(ItemDescription s, LinkType type) {
 		List<LinkDescription> ret = new ArrayList<LinkDescription>();
 		for (LinkDescription link : s.getLinks()) {
 			if (link.getType().equals(type)) {
@@ -1067,7 +1067,7 @@ public class MigrationModel {
 		return ret;
 	}
 
-	public List<LinkDescription> foundIncomingLinks(ItemDescription d, String type) {
+	public List<LinkDescription> foundIncomingLinks(ItemDescription d, LinkType type) {
 		List<LinkDescription> ret = new ArrayList<LinkDescription>();
 		List<LinkDescription> v = incomingLinkType.get(d.getId());
 		if (v != null) {

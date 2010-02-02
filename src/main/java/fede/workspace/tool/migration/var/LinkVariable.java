@@ -22,6 +22,7 @@ import java.util.List;
 
 import fr.imag.adele.cadse.core.ItemDescription;
 import fr.imag.adele.cadse.core.LinkDescription;
+import fr.imag.adele.cadse.core.LinkType;
 import fede.workspace.tool.migration.Context;
 import fede.workspace.tool.migration.MigrationModel;
 
@@ -112,7 +113,7 @@ public class LinkVariable extends Variable {
 	
 	@Override
 	protected Object initInstValue() {
-		return new LinkDescription((ItemDescription)source.getValue(), (String)getType().getValue(), (ItemDescription)destination.getValue(), false);
+		return new LinkDescription((ItemDescription)source.getValue(), (LinkType)getType().getValue(), (ItemDescription)destination.getValue(), false);
 	}
 
 	public ItemVarContext getDestination() {
