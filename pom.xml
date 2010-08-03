@@ -32,11 +32,11 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+    	    <groupId>fr.imag.adele.cadse</groupId>
             <artifactId>as.cu</artifactId>
         </dependency>
         <dependency>
-            <groupId>${project.groupId}</groupId>
+    	    <groupId>fr.imag.adele.cadse</groupId>
             <artifactId>cu.core</artifactId>
         </dependency>
     </dependencies>
