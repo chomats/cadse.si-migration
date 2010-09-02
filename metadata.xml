@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ipojo>
 	<component immediate="false" classname="fr.imag.adele.fede.workspace.si.migration.Migration" factory="fr.imag.adele.fede.workspace.si.migration.Migration" architecture="true">
-		<requires field="workspaceCU" optional="true" filter="(sam.domain.root=Workspace)"/>
+		<requires field="workspaceCU" optional="true" filter="(sam.domain.root=Workspace)" proxy="false" nullable="false"/>
 	</component>
 	<instance component="fr.imag.adele.fede.workspace.si.migration.Migration" name="fr.imag.adele.cadse.si.workspace.migration.instance"/>
 </ipojo>
